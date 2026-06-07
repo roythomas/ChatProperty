@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Building2, Wrench, BarChart3, Settings } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Building2, Wrench, BarChart3, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -9,6 +10,14 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <aside className="w-64 min-h-screen bg-slate-800 flex flex-col shadow-xl flex-shrink-0">
       {/* Logo */}
@@ -45,21 +54,34 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Settings */}
-      <div className="px-3 py-4 border-t border-slate-700">
+      {/* User & Settings */}
+      <div className="px-3 py-4 border-t border-slate-700 space-y-1">
         <button className="flex items-center gap-3 px-4 py-2.5 w-full rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-700 hover:text-white transition-all">
           <Settings className="w-5 h-5" />
           Settings
         </button>
-        <div className="mt-4 px-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">PM</div>
-            <div>
-              <p className="text-white text-xs font-medium">Property Admin</p>
-              <p className="text-slate-500 text-xs">admin@propmanager.ae</p>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-2.5 w-full rounded-xl text-sm font-medium text-slate-400 hover:bg-red-600/20 hover:text-red-400 transition-all"
+        >
+          <LogOut className="w-5 h-5" />
+          Sign out
+        </button>
+
+        {/* User info */}
+        {user && (
+          <div className="mt-3 px-4 pt-3 border-t border-slate-700">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                {user.initials}
+              </div>
+              <div className="min-w-0">
+                <p className="text-white text-xs font-medium truncate">{user.name}</p>
+                <p className="text-slate-500 text-xs truncate">{user.role}</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
